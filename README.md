@@ -1,3 +1,6 @@
+# THIS IS A FORK of gatsby-source-prismic
+With some additional functions.
+
 # gatsby-source-prismic
 
 Source plugin for pulling documents into Gatsby from prismic.io repositories.
