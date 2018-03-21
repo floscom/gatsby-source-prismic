@@ -6,6 +6,19 @@ import fetchData from './fetch'
 
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Prismic` })
 
+function clear(data) {
+    Object.keys(data).forEach((key) => {
+    		if(Array.isArray(data[key])) {
+        	data[key]= []
+        } else if(typeof data[key] === "object") {
+            data[key] = clear(data[key])
+        } else {
+            data[key] = undefined
+        }
+    })
+    return data
+}
+
 export const sourceNodes = async (
     { boundActionCreators: { createNode } },
     { repositoryName, accessToken }
@@ -17,13 +30,28 @@ export const sourceNodes = async (
             createNodeFunction[doc.type] = createNodeFactory(doc.type + "Document")
         }
     })
+
+    var template = {}
+    documents.forEach(doc => {
+        if(template[doc.type] === undefined) {
+            template[doc.type] = {}
+        }
+        template[doc.type] = Object.assign(template[doc.type], doc);
+    })
+
+    Object.keys(template).forEach((key) => {
+        var emptyData = JSON.parse(JSON.stringify(template[key]))
+        template[key] = clear(emptyData)
+    })
+
     documents.forEach(doc => {
         Object.keys(doc.data).forEach(key => {
             if(_.findKey(doc.data[key], "type")) {
                 doc.data[key+"_html"] = PrismicDOM.RichText.asHtml(doc.data[key], {}, htmlSerializer)
             }
         })
-        var newDoc = createNodeFunction[doc.type](doc)
+        var mergedDoc = Object.assign(template[doc.type], doc);
+        var newDoc = createNodeFunction[doc.type](mergedDoc)
         newDoc.id = doc.id
         createNode(newDoc)
     })
