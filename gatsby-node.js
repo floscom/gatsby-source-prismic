@@ -55,6 +55,9 @@ var _createNodeHelpers = (0, _gatsbyNodeHelpers2.default)({ typePrefix: 'Prismic
     createNodeFactory = _createNodeHelpers.createNodeFactory;
 
 function clear(data) {
+    if (data === undefined || data === null) {
+        return data;
+    }
     (0, _keys2.default)(data).forEach(function (key) {
         if (Array.isArray(data[key])) {
             data[key] = [];

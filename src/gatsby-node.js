@@ -7,6 +7,9 @@ import fetchData from './fetch'
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Prismic` })
 
 function clear(data) {
+    if(data === undefined || data === null) {
+        return data
+    }
     Object.keys(data).forEach((key) => {
     		if(Array.isArray(data[key])) {
         	data[key]= []
