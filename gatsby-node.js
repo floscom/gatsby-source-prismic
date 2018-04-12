@@ -113,6 +113,7 @@ var sourceNodes = exports.sourceNodes = function () {
                         documents.forEach(function (doc) {
                             (0, _keys2.default)(doc.data).forEach(function (key) {
                                 if (_lodash2.default.findKey(doc.data[key], "type")) {
+                                    doc.data[key + "_first"] = doc.data[key][0].text;
                                     doc.data[key + "_html"] = _prismicDom2.default.RichText.asHtml(doc.data[key], {}, htmlSerializer);
                                 }
                             });

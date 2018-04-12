@@ -50,6 +50,7 @@ export const sourceNodes = async (
     documents.forEach(doc => {
         Object.keys(doc.data).forEach(key => {
             if(_.findKey(doc.data[key], "type")) {
+                doc.data[key+"_first"] = doc.data[key][0].text
                 doc.data[key+"_html"] = PrismicDOM.RichText.asHtml(doc.data[key], {}, htmlSerializer)
             }
         })
