@@ -22,6 +22,16 @@ function clear(data) {
     return data
 }
 
+/*function checkForType(data) {
+    Object.keys(data).forEach(key => {
+        console.log("data[key]", data[key])
+        if(data[key] === typeof "object") {
+            console.log(data[key])
+        }
+    })
+    return data
+}*/
+
 export const sourceNodes = async (
     { boundActionCreators: { createNode } },
     { repositoryName, accessToken }
@@ -53,6 +63,13 @@ export const sourceNodes = async (
                 doc.data[key+"_first"] = doc.data[key][0].text
                 doc.data[key+"_html"] = PrismicDOM.RichText.asHtml(doc.data[key], {}, htmlSerializer)
             }
+            if(doc.data[key].id !== undefined) {
+                var found = _.find(documents, (o) => {
+                    return o.id === doc.data[key]["id"]
+                });
+                doc.data[key]["linkTo"] = found.data
+            }
+            //doc.data[key] = checkForType(doc.data[key])
         })
         var mergedDoc = Object.assign(template[doc.type], doc);
         var newDoc = createNodeFunction[doc.type](mergedDoc)

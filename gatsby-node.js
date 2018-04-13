@@ -70,6 +70,16 @@ function clear(data) {
     return data;
 }
 
+/*function checkForType(data) {
+    Object.keys(data).forEach(key => {
+        console.log("data[key]", data[key])
+        if(data[key] === typeof "object") {
+            console.log(data[key])
+        }
+    })
+    return data
+}*/
+
 var sourceNodes = exports.sourceNodes = function () {
     var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref2, _ref3) {
         var createNode = _ref2.boundActionCreators.createNode;
@@ -116,6 +126,14 @@ var sourceNodes = exports.sourceNodes = function () {
                                     doc.data[key + "_first"] = doc.data[key][0].text;
                                     doc.data[key + "_html"] = _prismicDom2.default.RichText.asHtml(doc.data[key], {}, htmlSerializer);
                                 }
+                                console.log("doc.data", doc.data[key].id);
+                                if (doc.data[key].id !== undefined) {
+                                    var found = _lodash2.default.find(documents, function (o) {
+                                        return o.id === doc.data[key]["id"];
+                                    });
+                                    doc.data[key]["linkTo"] = found.data;
+                                }
+                                //doc.data[key] = checkForType(doc.data[key])
                             });
                             var mergedDoc = (0, _assign2.default)(template[doc.type], doc);
                             var newDoc = createNodeFunction[doc.type](mergedDoc);
