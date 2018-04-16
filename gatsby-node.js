@@ -70,6 +70,26 @@ function clear(data) {
     return data;
 }
 
+function getPath(node) {
+    var lang = node.lang.substring(0, 2);
+    var path = [];
+    var type = node.type;
+
+    var slug = _lodash2.default.first(node.slugs);
+
+    if (lang === "de") {
+        if (type !== "welcome") {
+            path.push(slug);
+        } else {
+            path.push("/");
+        }
+    } else {
+        path.push(lang);
+        path.push(slug);
+    }
+    return path.join("/");
+}
+
 /*function checkForType(data) {
     Object.keys(data).forEach(key => {
         console.log("data[key]", data[key])
@@ -126,7 +146,6 @@ var sourceNodes = exports.sourceNodes = function () {
                                     doc.data[key + "_first"] = doc.data[key][0].text;
                                     doc.data[key + "_html"] = _prismicDom2.default.RichText.asHtml(doc.data[key], {}, htmlSerializer);
                                 }
-                                console.log("doc.data", doc.data[key].id);
                                 if (doc.data[key].id !== undefined) {
                                     var found = _lodash2.default.find(documents, function (o) {
                                         return o.id === doc.data[key]["id"];
@@ -138,6 +157,7 @@ var sourceNodes = exports.sourceNodes = function () {
                             var mergedDoc = (0, _assign2.default)(template[doc.type], doc);
                             var newDoc = createNodeFunction[doc.type](mergedDoc);
                             newDoc.id = doc.id;
+                            newDoc.url = getPath(doc);
                             createNode(newDoc);
                         });
 
