@@ -86,7 +86,7 @@ var sourceNodes = exports.sourceNodes = function () {
         var repositoryName = _ref3.repositoryName,
             accessToken = _ref3.accessToken;
 
-        var _ref4, documents, createNodeFunction, template;
+        var _ref4, documents, createNodeFunction, template, preparedDocs;
 
         return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
@@ -120,28 +120,37 @@ var sourceNodes = exports.sourceNodes = function () {
                             template[key] = clear(emptyData);
                         });
 
+                        preparedDocs = [];
+
                         documents.forEach(function (doc) {
                             (0, _keys2.default)(doc.data).forEach(function (key) {
                                 if (_lodash2.default.findKey(doc.data[key], "type")) {
                                     doc.data[key + "_first"] = doc.data[key][0].text;
                                     doc.data[key + "_html"] = _prismicDom2.default.RichText.asHtml(doc.data[key], {}, htmlSerializer);
                                 }
-                                console.log("doc.data", doc.data[key].id);
-                                if (doc.data[key].id !== undefined) {
-                                    var found = _lodash2.default.find(documents, function (o) {
-                                        return o.id === doc.data[key]["id"];
-                                    });
-                                    doc.data[key]["linkTo"] = found.data;
-                                }
-                                //doc.data[key] = checkForType(doc.data[key])
                             });
                             var mergedDoc = (0, _assign2.default)(template[doc.type], doc);
                             var newDoc = createNodeFunction[doc.type](mergedDoc);
                             newDoc.id = doc.id;
-                            createNode(newDoc);
+                            preparedDocs.push(newDoc);
                         });
 
-                    case 10:
+                        preparedDocs.forEach(function (doc) {
+                            (0, _keys2.default)(doc.data).forEach(function (key) {
+                                if (doc.data[key].id !== undefined) {
+                                    var found = _lodash2.default.find(preparedDocs, function (o) {
+                                        return o.id === doc.data[key]["id"];
+                                    });
+                                    if (key === "goto_left") {
+                                        console.log(found.data);
+                                    }
+                                    doc.data[key]["linkTo"] = found.data;
+                                }
+                            });
+                            createNode(doc);
+                        });
+
+                    case 12:
                     case 'end':
                         return _context.stop();
                 }

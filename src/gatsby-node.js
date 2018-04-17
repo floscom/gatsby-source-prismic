@@ -57,24 +57,33 @@ export const sourceNodes = async (
         template[key] = clear(emptyData)
     })
 
+    var preparedDocs = []
     documents.forEach(doc => {
         Object.keys(doc.data).forEach(key => {
             if(_.findKey(doc.data[key], "type")) {
                 doc.data[key+"_first"] = doc.data[key][0].text
                 doc.data[key+"_html"] = PrismicDOM.RichText.asHtml(doc.data[key], {}, htmlSerializer)
             }
-            if(doc.data[key].id !== undefined) {
-                var found = _.find(documents, (o) => {
-                    return o.id === doc.data[key]["id"]
-                });
-                doc.data[key]["linkTo"] = found.data
-            }
-            //doc.data[key] = checkForType(doc.data[key])
         })
         var mergedDoc = Object.assign(template[doc.type], doc);
         var newDoc = createNodeFunction[doc.type](mergedDoc)
         newDoc.id = doc.id
-        createNode(newDoc)
+        preparedDocs.push(newDoc)
+    })
+
+    preparedDocs.forEach(doc => {
+        Object.keys(doc.data).forEach(key => {
+            if(doc.data[key].id !== undefined) {
+                var found = _.find(preparedDocs, (o) => {
+                    return o.id === doc.data[key]["id"]
+                });
+                if(key === "goto_left") {
+                    console.log(found.data)
+                }
+                doc.data[key]["linkTo"] = found.data
+            }
+        })
+        createNode(doc)
     })
 }
 
