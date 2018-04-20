@@ -70,15 +70,26 @@ function clear(data) {
     return data;
 }
 
-/*function checkForType(data) {
-    Object.keys(data).forEach(key => {
-        console.log("data[key]", data[key])
-        if(data[key] === typeof "object") {
-            console.log(data[key])
+function checkForType(doc) {
+    (0, _keys2.default)(doc).forEach(function (key) {
+        if (_lodash2.default.findKey(doc[key], "type") && key !== "body") {
+            doc[key + "_first"] = doc[key][0].text;
+            doc[key + "_html"] = _prismicDom2.default.RichText.asHtml(doc[key], {}, htmlSerializer);
         }
-    })
-    return data
-}*/
+        if (key === "body") {
+            doc[key].forEach(function (item) {
+                doc[key]["primary"] = checkForType(item.primary);
+                if (doc[key]["items"] !== undefined) {
+                    doc[key]["items"].forEach(function (single, i) {
+                        doc[key]["items"][i] = checkForType(doc[key]["items"][i]);
+                    });
+                }
+            });
+        }
+    });
+    //console.log(doc.data)
+    return doc;
+}
 
 var sourceNodes = exports.sourceNodes = function () {
     var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref2, _ref3) {
@@ -123,12 +134,13 @@ var sourceNodes = exports.sourceNodes = function () {
                         preparedDocs = [];
 
                         documents.forEach(function (doc) {
-                            (0, _keys2.default)(doc.data).forEach(function (key) {
-                                if (_lodash2.default.findKey(doc.data[key], "type")) {
-                                    doc.data[key + "_first"] = doc.data[key][0].text;
-                                    doc.data[key + "_html"] = _prismicDom2.default.RichText.asHtml(doc.data[key], {}, htmlSerializer);
+                            /*Object.keys(doc.data).forEach(key => {
+                                if(_.findKey(doc.data[key], "type")) {
+                                    doc.data[key+"_first"] = doc.data[key][0].text
+                                    doc.data[key+"_html"] = PrismicDOM.RichText.asHtml(doc.data[key], {}, htmlSerializer)
                                 }
-                            });
+                            })*/
+                            doc.data = checkForType(doc.data);
                             var mergedDoc = (0, _assign2.default)(template[doc.type], doc);
                             var newDoc = createNodeFunction[doc.type](mergedDoc);
                             newDoc.id = doc.id;
@@ -141,9 +153,6 @@ var sourceNodes = exports.sourceNodes = function () {
                                     var found = _lodash2.default.find(preparedDocs, function (o) {
                                         return o.id === doc.data[key]["id"];
                                     });
-                                    if (key === "goto_left") {
-                                        console.log(found.data);
-                                    }
                                     doc.data[key]["linkTo"] = found.data;
                                 }
                             });

@@ -22,15 +22,26 @@ function clear(data) {
     return data
 }
 
-/*function checkForType(data) {
-    Object.keys(data).forEach(key => {
-        console.log("data[key]", data[key])
-        if(data[key] === typeof "object") {
-            console.log(data[key])
+function checkForType(doc) {
+    Object.keys(doc).forEach(key => {
+        if(_.findKey(doc[key], "type") && key !== "body") {
+            doc[key+"_first"] = doc[key][0].text
+            doc[key+"_html"] = PrismicDOM.RichText.asHtml(doc[key], {}, htmlSerializer)
+        }
+        if(key === "body") {
+            doc[key].forEach(item => {
+                doc[key]["primary"] = checkForType(item.primary)
+                if(doc[key]["items"] !== undefined) {
+                    doc[key]["items"].forEach((single, i) => {
+                        doc[key]["items"][i] = checkForType(doc[key]["items"][i])
+                    })
+                }
+            })
         }
     })
-    return data
-}*/
+    //console.log(doc.data)
+    return doc
+}
 
 export const sourceNodes = async (
     { boundActionCreators: { createNode } },
@@ -59,12 +70,13 @@ export const sourceNodes = async (
 
     var preparedDocs = []
     documents.forEach(doc => {
-        Object.keys(doc.data).forEach(key => {
+        /*Object.keys(doc.data).forEach(key => {
             if(_.findKey(doc.data[key], "type")) {
                 doc.data[key+"_first"] = doc.data[key][0].text
                 doc.data[key+"_html"] = PrismicDOM.RichText.asHtml(doc.data[key], {}, htmlSerializer)
             }
-        })
+        })*/
+        doc.data = checkForType(doc.data)
         var mergedDoc = Object.assign(template[doc.type], doc);
         var newDoc = createNodeFunction[doc.type](mergedDoc)
         newDoc.id = doc.id
@@ -77,9 +89,6 @@ export const sourceNodes = async (
                 var found = _.find(preparedDocs, (o) => {
                     return o.id === doc.data[key]["id"]
                 });
-                if(key === "goto_left") {
-                    console.log(found.data)
-                }
                 doc.data[key]["linkTo"] = found.data
             }
         })
