@@ -148,6 +148,13 @@ var sourceNodes = exports.sourceNodes = function () {
                         });
 
                         preparedDocs.forEach(function (doc) {
+                            doc.alternate_languages.forEach(function (single, index) {
+                                var found = _lodash2.default.find(preparedDocs, function (o) {
+                                    return o.id === single.id;
+                                });
+                                doc.alternate_languages[index].uid = found.uid;
+                                console.log(found.uid);
+                            });
                             (0, _keys2.default)(doc.data).forEach(function (key) {
                                 if (doc.data[key].id !== undefined) {
                                     var found = _lodash2.default.find(preparedDocs, function (o) {

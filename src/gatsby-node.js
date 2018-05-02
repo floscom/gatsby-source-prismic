@@ -84,6 +84,12 @@ export const sourceNodes = async (
     })
 
     preparedDocs.forEach(doc => {
+        doc.alternate_languages.forEach((single, index) => {
+            var found = _.find(preparedDocs, (o) => {
+                return o.id === single.id
+            })
+            doc.alternate_languages[index].uid = found.uid
+        })
         Object.keys(doc.data).forEach(key => {
             if(doc.data[key].id !== undefined) {
                 var found = _.find(preparedDocs, (o) => {
