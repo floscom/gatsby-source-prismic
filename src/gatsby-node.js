@@ -3,6 +3,7 @@ import createNodeHelpers from 'gatsby-node-helpers'
 import pipe from 'lodash/fp/pipe'
 import _ from 'lodash'
 import fetchData from './fetch'
+import generatePath from './getPath'
 
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `Prismic` })
 

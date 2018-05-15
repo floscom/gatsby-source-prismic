@@ -49,6 +49,10 @@ var _fetch = require('./fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
+var _getPath = require('./getPath');
+
+var _getPath2 = _interopRequireDefault(_getPath);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _createNodeHelpers = (0, _gatsbyNodeHelpers2.default)({ typePrefix: 'Prismic' }),
@@ -153,7 +157,6 @@ var sourceNodes = exports.sourceNodes = function () {
                                     return o.id === single.id;
                                 });
                                 doc.alternate_languages[index].uid = found.uid;
-                                console.log(found.uid);
                             });
                             (0, _keys2.default)(doc.data).forEach(function (key) {
                                 if (doc.data[key].id !== undefined) {
